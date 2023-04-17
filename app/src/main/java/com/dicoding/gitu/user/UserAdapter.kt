@@ -23,8 +23,8 @@ class UserAdapter(private val listUser: ArrayList<User>): RecyclerView.Adapter<U
     override fun getItemCount(): Int = listUser.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (photo, username) = listUser[position]
-        Glide.with(holder.itemView.context).load(photo).into(holder.imgPhoto)
+        val (photo, username) = listUser[position] //mengambil data foto dan username
+        Glide.with(holder.itemView.context).load(photo).into(holder.imgPhoto) //load foto profil dari url
         holder.tvUsername.text = username
     }
 

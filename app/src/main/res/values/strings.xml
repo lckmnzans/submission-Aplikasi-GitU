@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">GitU</string>
-    <string name="user_name">Nama User</string>
+    <string name="count_item">Hasil</string>
     <string name="user_username">Username</string>
+    <string name="user_avatar">Avatar</string>
     <string name="user_following">Following</string>
     <string name="user_followers">Followers</string>
 </resources>
