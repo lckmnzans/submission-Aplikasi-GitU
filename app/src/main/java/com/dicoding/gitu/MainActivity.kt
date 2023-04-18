@@ -2,6 +2,7 @@ package com.dicoding.gitu
 
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -53,7 +54,6 @@ class MainActivity : AppCompatActivity() {
                 findUser()
                 return true
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
                 return false
             }
@@ -89,10 +89,10 @@ class MainActivity : AppCompatActivity() {
                     val responseBody = response.body()
                     if (responseBody != null) {
                         //jika body response tidak null, diambil data dari key items dan totalCount
-                        setUserData(responseBody.items, responseBody.totalCount)
+                        setUserData(responseBody.items)
                     }
                 } else {
-                    //medapatkan response tidak sukses dari Http Request
+                    //medapatkan response tidak sukses dari Http Request yg dimunculkan di logcat
                     Log.e(TAG, "onFailure: ${response.message()}")
                 }
             }
@@ -104,12 +104,12 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun setUserData(users: List<ItemsItem>, count: Int) {
+    private fun setUserData(users: List<ItemsItem>) {
         //membuat list kosong dengan tipe parameter User -> dari kelas data User
         val list = ArrayList<User>()
         for (user in users) {
             //untuk tiap-tiap user, data-datanya dimasukkan ke dalam kelas data User() yang akan dikirimkan ke adapter
-            val userData = User(user.avatarUrl.toString(), user.login.toString(), user.followersUrl.toString(), user.followingUrl.toString())
+            val userData = User(user.avatarUrl.toString(), user.login.toString())
             //menambahkan data tersebut ke dalam list
             list.add(userData)
         }
@@ -117,5 +117,20 @@ class MainActivity : AppCompatActivity() {
         val listUser = UserAdapter(list)
         //menerapkan adapter tersebut ke adapter dlm MainActivity
         activityMainBinding.rvUsers.adapter = listUser
+
+        //menerapkan listener pada tiap-tiap item di listUser
+        //ketika item dipilih, akan muncul event callback yang memanggil activity tujuan dg ikut mengirimkan data
+        listUser.setOnUserClickCallback(object: UserAdapter.OnUserClickCallback {
+            //melakukan override method di interface OnUserClickCallback
+            override fun onUserClicked(data: User) {
+                val userDetail = User(data.photo, data.username)
+                //menginstansi intent untuk mengirim data dari MainActivity ke DetailActivity
+                val toDetail = Intent(this@MainActivity, DetailActivity::class.java)
+                //meletakkan data ke dalam intent
+                toDetail.putExtra(DetailActivity.EXTRA_USER, userDetail)
+                //memulai intent eksplisit
+                startActivity(toDetail)
+            }
+        })
     }
 }

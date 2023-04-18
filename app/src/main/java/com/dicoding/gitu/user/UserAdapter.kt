@@ -10,6 +10,14 @@ import com.bumptech.glide.Glide
 import com.dicoding.gitu.R
 
 class UserAdapter(private val listUser: ArrayList<User>): RecyclerView.Adapter<UserAdapter.ViewHolder>() {
+    //menerapkan viewBinding UserAdapter
+    private lateinit var onUserClickCallback: OnUserClickCallback
+
+    //menambahkan interface
+    interface OnUserClickCallback {
+        fun onUserClicked(data: User)
+    }
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         //menetapkan objek imgPhoto utk foto profil
         val imgPhoto: ImageView = itemView.findViewById(R.id.img_user_photo)
@@ -31,6 +39,14 @@ class UserAdapter(private val listUser: ArrayList<User>): RecyclerView.Adapter<U
         Glide.with(holder.itemView.context).load(photo).into(holder.imgPhoto)
         //load username
         holder.tvUsername.text = username
+        holder.itemView.setOnClickListener {
+            //menerapkan listener ke item
+            onUserClickCallback.onUserClicked(listUser[holder.adapterPosition])
+        }
     }
 
+    fun setOnUserClickCallback(onUserClickCallback: OnUserClickCallback) {
+        //menerapkan event callback ketika item ditekan
+        this.onUserClickCallback = onUserClickCallback
+    }
 }
