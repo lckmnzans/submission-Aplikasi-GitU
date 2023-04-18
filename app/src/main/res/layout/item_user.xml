@@ -41,7 +41,7 @@
             card_view:layout_constraintStart_toEndOf="@id/img_user_photo"
             card_view:layout_constraintTop_toTopOf="parent"
             tools:text="@string/user_username" />
-
+        <!--
         <TextView
             android:id="@+id/tv_user_following"
             android:layout_width="0dp"
@@ -70,6 +70,7 @@
             card_view:layout_constraintBottom_toBottomOf="parent"
             tools:text="@string/user_followers"
             />
+         -->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

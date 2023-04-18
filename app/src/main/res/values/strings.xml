@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">GitU</string>
-    <string name="count_item">Hasil</string>
+    <string name="count_item">Results</string>
     <string name="user_username">Username</string>
+    <string name="user_user_name">Name</string>
     <string name="user_avatar">Avatar</string>
     <string name="user_following">Following</string>
     <string name="user_followers">Followers</string>
-
+    <string name="user_followerscount">0</string>
+    <string name="user_followingcount">0</string>
     <string name="search">Cari</string>
     <string name="search_hint">Masukkan nama yang dicari</string>
 </resources>
