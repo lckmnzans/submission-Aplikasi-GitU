@@ -5,10 +5,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.annotation.StringRes
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.dicoding.gitu.api.ApiConfig
 import com.dicoding.gitu.databinding.ActivityDetailBinding
+import com.dicoding.gitu.follows.SectionsPageAdapter
 import com.dicoding.gitu.user.User
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,6 +25,12 @@ class DetailActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "DetailActivity"
         const val EXTRA_USER = "extra_user"
+
+        @StringRes
+        private val TAB_TITLES = intArrayOf(
+            R.string.tab_1,
+            R.string.tab_2
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +52,16 @@ class DetailActivity : AppCompatActivity() {
         if (user != null) {
             getUserDetail(user.username, user.photo)
         }
+
+        val sectionsPageAdapter = SectionsPageAdapter(this)
+        val viewPager: ViewPager2 = activityDetailBinding.viewPager
+        viewPager.adapter = sectionsPageAdapter
+        val tabs: TabLayout = activityDetailBinding.tabs
+        TabLayoutMediator(tabs, viewPager) { tab, position ->
+            tab.text = resources.getString(TAB_TITLES[position])
+        }.attach()
+
+        supportActionBar?.elevation = 0f
     }
 
     private fun getUserDetail(login: String, avtUrl: String) {
