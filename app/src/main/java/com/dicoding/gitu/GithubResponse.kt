@@ -8,7 +8,7 @@ data class GithubResponse(
 	val totalCount: Int,
 
 	@field:SerializedName("incomplete_results")
-	val incompleteResults: Boolean? = null,
+	val incompleteResults: Boolean,
 
 	@field:SerializedName("items")
 	val items: List<ItemsItem>

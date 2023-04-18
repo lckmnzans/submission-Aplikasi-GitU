@@ -5,4 +5,7 @@
     <string name="user_avatar">Avatar</string>
     <string name="user_following">Following</string>
     <string name="user_followers">Followers</string>
+
+    <string name="search">Cari</string>
+    <string name="search_hint">Masukkan nama yang dicari</string>
 </resources>
