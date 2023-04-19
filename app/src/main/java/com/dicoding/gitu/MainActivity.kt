@@ -50,8 +50,7 @@ class MainActivity : AppCompatActivity() {
         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 searchView.clearFocus()
-                QUERY = query
-                findUser()
+                querying(query)
                 return true
             }
             override fun onQueryTextChange(newText: String?): Boolean {
@@ -104,6 +103,11 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun querying(query: String) {
+        QUERY = query
+        findUser()
+    }
+    
     private fun setUserData(users: List<Items>) {
         //membuat list kosong dengan tipe parameter User -> dari kelas data User
         val list = ArrayList<User>()

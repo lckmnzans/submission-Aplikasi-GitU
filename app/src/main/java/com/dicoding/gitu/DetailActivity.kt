@@ -26,6 +26,7 @@ class DetailActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "DetailActivity"
         const val EXTRA_USER = "extra_user"
+        var EXTRA_USERNAME = "extra_username"
 
         @StringRes
         private val TAB_TITLES = intArrayOf(
@@ -51,6 +52,7 @@ class DetailActivity : AppCompatActivity() {
 
         //menerapkan data tersebut ke dalam context
         if (user != null) {
+            EXTRA_USERNAME = user.username
             getUserDetail(user.username, user.photo)
         }
 
