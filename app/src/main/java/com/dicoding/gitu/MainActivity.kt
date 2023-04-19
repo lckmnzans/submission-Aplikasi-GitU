@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     //mendapatkan response sukses dari Http Request
                     val responseBody = response.body()
-                    if (responseBody != null) {
+                    if (responseBody?.items != null) {
                         //jika body response tidak null, diambil data dari key items dan totalCount
                         setUserData(responseBody.items)
                     }
@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun setUserData(users: List<ItemsItem>) {
+    private fun setUserData(users: List<Items>) {
         //membuat list kosong dengan tipe parameter User -> dari kelas data User
         val list = ArrayList<User>()
         for (user in users) {

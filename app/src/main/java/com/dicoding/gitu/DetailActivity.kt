@@ -10,6 +10,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.dicoding.gitu.api.ApiConfig
 import com.dicoding.gitu.databinding.ActivityDetailBinding
+import com.dicoding.gitu.follows.FollowsFragment
 import com.dicoding.gitu.follows.SectionsPageAdapter
 import com.dicoding.gitu.user.User
 import com.google.android.material.tabs.TabLayout
@@ -39,7 +40,7 @@ class DetailActivity : AppCompatActivity() {
         setContentView(activityDetailBinding.root)
 
         //mengambil data yg dikirim dengan intent dari activity sebelumnya
-        val user =if (Build.VERSION.SDK_INT >= 33) {
+        val user = if (Build.VERSION.SDK_INT >= 33) {
             intent.getParcelableExtra(EXTRA_USER, User::class.java)
         } else {
             @Suppress("DEPRECATED")
