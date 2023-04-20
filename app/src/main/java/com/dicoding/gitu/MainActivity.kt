@@ -5,26 +5,22 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.dicoding.gitu.api.ApiConfig
 import com.dicoding.gitu.databinding.ActivityMainBinding
 import com.dicoding.gitu.user.User
 import com.dicoding.gitu.user.UserAdapter
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.dicoding.gitu.viewModel.MainViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
-
-    companion object {
-        private const val TAG = "MainActivity"
-        private var QUERY = "fadhil"
+    private val viewModel: MainViewModel by lazy {
+       ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(MainViewModel::class.java)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -34,7 +30,8 @@ class MainActivity : AppCompatActivity() {
 
         //menerapkan recyclerV dalam linear vertikal
         activityMainBinding.rvUsers.layoutManager = LinearLayoutManager(this)
-        findUser()
+        viewModel.listUser.observe(this, { items -> setUserData(items) })
+        viewModel.isLoading.observe(this, { showLoading(it) })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -50,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 searchView.clearFocus()
-                querying(query)
+                viewModel.updateQuery(query)
                 return true
             }
             override fun onQueryTextChange(newText: String?): Boolean {
@@ -72,42 +69,7 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.rvUsers.visibility = View.VISIBLE
         }
     }
-    private fun findUser() {
-        showLoading(true)
-        val client = ApiConfig.getApiService().getUser(QUERY)
-        //menerapkan kembalian dari Http Request ke dalam Callback dengan tipe parameter GithubResponse
-        client.enqueue(object: Callback<GithubResponse> {
-            //jika didapatkan response
-            override fun onResponse(
-                call: Call<GithubResponse>,
-                response: Response<GithubResponse>
-            ) {
-                showLoading(false)
-                if (response.isSuccessful) {
-                    //mendapatkan response sukses dari Http Request
-                    val responseBody = response.body()
-                    if (responseBody?.items != null) {
-                        //jika body response tidak null, diambil data dari key items dan totalCount
-                        setUserData(responseBody.items)
-                    }
-                } else {
-                    //medapatkan response tidak sukses dari Http Request yg dimunculkan di logcat
-                    Log.e(TAG, "onFailure: ${response.message()}")
-                }
-            }
-            //jika tidak didapatkan respon
-            override fun onFailure(call: Call<GithubResponse>, t: Throwable) {
-                showLoading(false)
-                Log.e(TAG, "onFailure: ${t.message}")
-            }
-        })
-    }
 
-    private fun querying(query: String) {
-        QUERY = query
-        findUser()
-    }
-    
     private fun setUserData(users: List<Items>) {
         //membuat list kosong dengan tipe parameter User -> dari kelas data User
         val list = ArrayList<User>()

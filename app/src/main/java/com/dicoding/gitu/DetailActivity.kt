@@ -6,13 +6,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.dicoding.gitu.api.ApiConfig
 import com.dicoding.gitu.databinding.ActivityDetailBinding
-import com.dicoding.gitu.follows.FollowsFragment
 import com.dicoding.gitu.follows.SectionsPageAdapter
 import com.dicoding.gitu.user.User
+import com.dicoding.gitu.viewModel.DetailViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import retrofit2.Call
@@ -22,9 +23,11 @@ import retrofit2.Response
 class DetailActivity : AppCompatActivity() {
     //menerapkan viewBinding DetailActivity
     private lateinit var activityDetailBinding: ActivityDetailBinding
+    private val viewModel: DetailViewModel by lazy {
+        ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(DetailViewModel::class.java)
+    }
     //melakukan instansi objek internal dengan companion
     companion object {
-        private const val TAG = "DetailActivity"
         const val EXTRA_USER = "extra_user"
         var EXTRA_USERNAME = "extra_username"
 
@@ -53,7 +56,9 @@ class DetailActivity : AppCompatActivity() {
         //menerapkan data tersebut ke dalam context
         if (user != null) {
             EXTRA_USERNAME = user.username
-            getUserDetail(user.username, user.photo)
+            DetailViewModel.USERNAME = user.username
+            viewModel.userDetail.observe(this, { userDetail -> setUserDetail(userDetail)})
+            viewModel.isLoading.observe(this, { showLoading(it) })
         }
 
         val sectionsPageAdapter = SectionsPageAdapter(this)
@@ -67,52 +72,6 @@ class DetailActivity : AppCompatActivity() {
         supportActionBar?.elevation = 0f
     }
 
-    private fun getUserDetail(login: String, avtUrl: String) {
-        showLoading(true)
-        val client = ApiConfig.getApiService().getDetailUser(login)
-        //menerapkan kembalian dari Http Request ke dalam Callback dengan tipe parameter UserResponse
-        client.enqueue(object: Callback<UserDetailResponse>{
-            //jika didapatkan response
-            override fun onResponse(
-                call: Call<UserDetailResponse>,
-                response: Response<UserDetailResponse>
-            ) {
-                showLoading(false)
-                if (response.isSuccessful) {
-                    //mendapatkan response sukses dari Http Request
-                    val responseBody = response.body()
-                    if (responseBody != null) {
-                        //jika body response tidak null
-                        val name = responseBody.name
-                        val uname = responseBody.login
-                        val followers = responseBody.followers
-                        val following = responseBody.following
-                        //menerapkan imageUrl ke dalam imgView dengan Glide
-                        Glide.with(this@DetailActivity).load(avtUrl).into(activityDetailBinding.imgUserProfile)
-                        //menerapkan nama dari response ke dalam textView nama
-                        if (name != null) {
-                            activityDetailBinding.tvUserName.text = name.toString()
-                        } else {
-                            activityDetailBinding.tvUserName.text = uname.toString()
-                        }
-                        //menerapkan username dari response ke dalam textView username
-                        activityDetailBinding.tvUserUsername.text = uname.toString()
-                        //menerapkan jml followers dan following ke dalam textView followers serta following
-                        activityDetailBinding.tvFollowersCount.text = followers.toString()
-                        activityDetailBinding.tvFollowingCount.text = following.toString()
-                    } else {
-                        //medapatkan response tidak sukses dari Http Request yg dimunculkan di logcat
-                        Log.e(TAG, "onFailure: ${response.message()}")
-                    }
-                }
-            }
-            override fun onFailure(call: Call<UserDetailResponse>, t: Throwable) {
-                showLoading(false)
-                Log.e(TAG, "onFailure: ${t.message}")
-            }
-        })
-    }
-
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
             //jika sedang loading, progress bar muncul dan recyclerview tidak muncul
@@ -121,5 +80,26 @@ class DetailActivity : AppCompatActivity() {
             //jika sedang tidak loading, progress bar tidak muncul tetapi recyclerview muncul
             activityDetailBinding.progressBar.visibility = View.GONE
         }
+    }
+
+    private fun setUserDetail(user: UserDetailResponse) {
+        //jika body response tidak null
+        val name = user.name
+        val uname = user.login
+        val followers = user.followers
+        val following = user.following
+        //menerapkan imageUrl ke dalam imgView dengan Glide
+        Glide.with(this@DetailActivity).load(user.avatarUrl).into(activityDetailBinding.imgUserProfile)
+        //menerapkan nama dari response ke dalam textView nama
+        if (name != null) {
+            activityDetailBinding.tvUserName.text = name.toString()
+        } else {
+            activityDetailBinding.tvUserName.text = uname.toString()
+        }
+        //menerapkan username dari response ke dalam textView username
+        activityDetailBinding.tvUserUsername.text = uname.toString()
+        //menerapkan jml followers dan following ke dalam textView followers serta following
+        activityDetailBinding.tvFollowersCount.text = followers.toString()
+        activityDetailBinding.tvFollowingCount.text = following.toString()
     }
 }

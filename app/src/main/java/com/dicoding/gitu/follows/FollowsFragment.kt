@@ -6,11 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.gitu.Items
 import com.dicoding.gitu.api.ApiConfig
 import com.dicoding.gitu.databinding.FragmentFollowsBinding
 import com.dicoding.gitu.user.User
+import com.dicoding.gitu.viewModel.DetailViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,6 +20,10 @@ import retrofit2.Response
 class FollowsFragment : Fragment() {
     private var _binding: FragmentFollowsBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel by lazy {
+        ViewModelProvider(this).get(DetailViewModel::class.java)
+    }
 
     companion object {
         const val ARG_POSITION = "section_number"
@@ -31,10 +37,11 @@ class FollowsFragment : Fragment() {
 
         binding.rvFollowsList.layoutManager = LinearLayoutManager(requireContext())
         if (position == 1) {
-            findUser(ApiConfig.getApiService().getFollowers(username))
+            viewModel.getUserFollowsDetail(ApiConfig.getApiService().getFollowers(username))
         } else {
-            findUser(ApiConfig.getApiService().getFollowing(username))
+            viewModel.getUserFollowsDetail(ApiConfig.getApiService().getFollowing(username))
         }
+        viewModel.userFollowsList.observe(viewLifecycleOwner) { users -> setUsers(users) }
     }
 
     override fun onCreateView(
@@ -50,7 +57,9 @@ class FollowsFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    private fun findUser(client: Call<List<Items>>) {
+
+    /*
+    private fun getUserFollowsDetail(client: Call<List<Items>>) {
         //menerapkan kembalian dari Http Request ke dalam Callback dengan tipe parameter GithubResponse
         client.enqueue(object: Callback<List<Items>> {
             //jika didapatkan response
@@ -73,6 +82,7 @@ class FollowsFragment : Fragment() {
             }
         })
     }
+    */
 
     private fun setUsers(users: List<Items>) {
         //membuat list kosong dengan tipe parameter User -> dari kelas data User
